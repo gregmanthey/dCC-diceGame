@@ -91,15 +91,13 @@ function batting (balls, strikes, player) {
 function chooseSwing (choice = 0) {
     while(true) {
       if (choice !== 1 && choice !== 2) {
-        choice = prompt("Would you like to swing for Power (1) or Contact (2) ?");
+        choice = parseInt(prompt("Would you like to swing for Power (1) or Contact (2) ?"));
       }
       switch (choice) {
         case 1: //Power
-        case "1":
           return 8;
           break;
         case 2: //Contact
-        case "2":
           return 12;
           break;
         default:
@@ -113,7 +111,7 @@ function ballInPlay () {
 
 }
 
-function pitching (balls, strikes, player) {
+function pitching (balls, strikes, score, player) {
   let pitch;
   if (player) {
     pitch = choosePitch();
@@ -133,6 +131,7 @@ function pitching (balls, strikes, player) {
   }
   else if (accuracy === 1) {
     balls++;
+    score = wildPitch(score);
     console.log("Wild pitch! Runners advance.");
   }
   else if (accuracy === pitch) {
@@ -153,19 +152,16 @@ function pitching (balls, strikes, player) {
 function choosePitch (choice = 0) {
   while (true) {
     if (choice !== 1 && choice !== 2 && choice !== 3) {
-      choice = prompt("Choose a pitch: 1) Fastball 2) Changeup 3) Curveball");
+      choice = parseInt(prompt("Choose a pitch: 1) Fastball 2) Changeup 3) Curveball"));
     }
     switch (choice) {
       case 1: //"Fastball"
-      case "1":
         return 12;
         break;
       case 2: //"Changeup"
-      case "2":
         return 10;
         break;
       case 3: //"Curveball"
-      case "3":
         return 8;
         break;
       default:
@@ -230,6 +226,21 @@ function addBaseRunner(numOfBases, score) {
     }
     return ++score;
   }
+}
+
+function wildPitch(score) {
+  for (let i = 2; i >= 0; i--) {
+    if (baseRunners.bases[i] === true && i == 2) {
+      score++;
+      console.log("Batting team scored! They currently have " + score + " runs.");
+      baseRunners.total--;
+    }
+    else if (baseRunners.bases[i] === true) {
+      baseRunners.bases[i] = false;
+      baseRunners.bases[i + 1] = true;
+    }
+  }
+  return score;
 }
 
 function runGameSummary () {
