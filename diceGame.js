@@ -15,7 +15,7 @@ function runDiceGame() {
   
   while (outs < 3) {
     if (home) {
-      pitchingResult = pitching(balls, strikes, player);
+      pitchingResult = pitching(balls, strikes, computerScore, player);
       if (pitchingResult === "strikeout") {
         outs++;
       }
@@ -23,12 +23,13 @@ function runDiceGame() {
         addBaseRunner(1, computerScore);
       }
       else {
-        battingResult = batting(balls, strikes, computer);
+        battingResult = batting(balls, strikes, !player);
       }
     }
     else {
       pitching(balls, strikes, computer);
       battingResult = batting(balls, strikes, player);
+      
     }
   }
   runGameSummary(playerScore, computerScore);
@@ -108,7 +109,32 @@ function chooseSwing (choice = 0) {
 }
 
 function ballInPlay () {
-
+  let resultingRoll = rollDice(20);
+  console.log("Rolling 20 sided die for a ball in play... result is " + resultingRoll);
+  if (resultingRoll < 6) {
+    console.log("Batter is out. No runners advance.");
+    return "out";
+  }
+  else if (resultingRoll < 11) {
+    console.log("Batter is out, runners advance.");
+    return "advance";
+  }
+  else if (resultingRoll < 17) {
+    console.log("Base hit!");
+    return "single";
+  }
+  else if (resultingRoll < 19) {
+    console.log("In play for a double!");
+    return "double";
+  }
+  else if (resultingRoll < 20) {
+    console.log("Ball hits a gap in the outfield for a triple!");
+    return "triple";
+  }
+  else {
+    console.log("HOME RUN!!!");
+    return "home run";
+  }
 }
 
 function pitching (balls, strikes, score, player) {
@@ -131,8 +157,8 @@ function pitching (balls, strikes, score, player) {
   }
   else if (accuracy === 1) {
     balls++;
-    score = wildPitch(score);
     console.log("Wild pitch! Runners advance.");
+    score = wildPitch(score);
   }
   else if (accuracy === pitch) {
     strikes++;
@@ -248,7 +274,7 @@ function runGameSummary (userScore, computerScore) {
     console.log("Wow, it's a tie!");
   }
   else if (userScore > computerScore) {
-    console.log("Conglaturation! You defeated the computer!");
+    console.log("Conglaturation! A winner is you");
   }
   else {
     console.log("Bummer. Better luck next time!");
