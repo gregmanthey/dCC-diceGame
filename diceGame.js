@@ -10,13 +10,23 @@ function runDiceGame() {
   let outs = 0;
   let player = true;
   let accuracy;
-  if (home) {
-    pitching(balls, strikes, player);
-    batting(accuracy, !player);
-  }
-  else {
-    batting(accuracy, player);
-    pitching(balls, strikes, !player);
+  while (outs < 3) {
+    if (home) {
+      let result = pitching(balls, strikes, player);
+      if (result === "strikeout") {
+        outs++;
+      }
+      else if (result === "walk") {
+        addBaseRunner(1, computerScore);
+      }
+      else {
+        batting(result, !player);
+      }
+    }
+    else {
+      batting(accuracy, player);
+      pitching(balls, strikes, !player);
+    }
   }
   runGameSummary(playerScore, computerScore);
 }
@@ -47,7 +57,7 @@ function isHome() {
 }
 
 function batting () {
-
+  
 }
 
 function pitching (balls, strikes, player) {
@@ -82,7 +92,7 @@ function pitching (balls, strikes, player) {
   }
   else {
     console.log("Pitch is in the zone...");
-    //return "accurate"; //uncomment this once the batting section is designed
+    return accuracy;
   }
   pitching(balls, strikes, player);
 }
@@ -122,6 +132,48 @@ function pitchResult (pitch) {
   }
 }
 
+function addBaseRunner(numOfBases, score) {
+  if (numOfBases === 4) {
+    score += baseRunners.total + 1;
+    baseRunners.total = 0;
+    baseRunners.bases = [false, false, false];
+    return score;
+  }
+  else if (numOfBases === 3) {
+    score += baseRunners.total;
+    baseRunners.total = 1;
+    baseRunners.bases = [false, false, true];
+  }
+  else if (numOfBases === 2) {
+    if (baseRunners.bases[2]) {
+      score++;
+      baseRunners.bases[2] = false;
+      baseRunners.total--;
+    }
+    if (baseRunners.bases[1] === true) {
+      score++;
+      baseRunners.bases[1] = false;
+      baseRunners.total--;
+    }
+    if (baseRunners.bases[0] === true) {
+      baseRunners.bases[0] = false;
+      baseRunners.bases[2] = true;
+      baseRunners.total++;
+    }
+    return score;
+  }
+  else if (numOfBases === 1) {
+    for (let i = 0; i < baseRunners.bases.length; i++) {
+      if (!baseRunners.bases[i]) {
+        baseRunners.bases[i] = true;
+        baseRunners.total++;
+        return score;
+      }
+    }
+    return ++score;
+  }
+}
+
 function runGameSummary () {
 
 }
@@ -130,4 +182,9 @@ let fastball = {
   hitChance: 90,
   hitPower: 90,
   accuracy: 90,
+}
+
+let baseRunners = {
+  total: 0,
+  bases: [false, false, false]
 }
