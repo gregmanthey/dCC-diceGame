@@ -8,31 +8,34 @@ function runDiceGame() {
   let balls = 0;
   let strikes = 0;
   let outs = 0;
+  let pitchingResult;
+  let battingResult;
   let player = true;
-  let accuracy;
+  let computer = false;
+  
   while (outs < 3) {
     if (home) {
-      let result = pitching(balls, strikes, player);
-      if (result === "strikeout") {
+      pitchingResult = pitching(balls, strikes, player);
+      if (pitchingResult === "strikeout") {
         outs++;
       }
-      else if (result === "walk") {
+      else if (pitchingResult === "walk") {
         addBaseRunner(1, computerScore);
       }
       else {
-        batting(result, !player);
+        battingResult = batting(balls, strikes, computer);
       }
     }
     else {
-      batting(accuracy, player);
-      pitching(balls, strikes, !player);
+      pitching(balls, strikes, computer);
+      battingResult = batting(balls, strikes, player);
     }
   }
   runGameSummary(playerScore, computerScore);
 }
 
 function rollDice(numOfSides) {
-  return Math.floor(Math.random() * numOfSides + 1);
+  return Math.floor(Math.random() * numOfSides) + 1;
 }
 
 function runSplashScreen () {
@@ -56,8 +59,58 @@ function isHome() {
   }
 }
 
-function batting () {
-  
+function batting (balls, strikes, player) {
+  let swing;
+  if (player === true) {
+    swing = chooseSwing();
+  }
+  else {
+    swing = chooseSwing(rollDice(2));
+  }
+  let hitChance = rollDice(swing);
+  console.log("Rolling " + swing + " sided die for batter... result is " + hitChance);
+  if (hitChance === swing) {
+    console.log("Home run!");
+    return "home run";
+  }
+  else if (hitChance === 1) {
+    console.log("Pop fly, batter is out!");
+    return "out";
+  }
+  else if (hitChance < 4) {
+    console.log("Swing and a miss!");
+    return "strike";
+  }
+  else {
+    //figure out in play results and what to do. Maybe roll a d20.
+    let result = ballInPlay();
+    return result;
+  }
+}
+
+function chooseSwing (choice = 0) {
+    while(true) {
+      if (choice !== 1 && choice !== 2) {
+        choice = prompt("Would you like to swing for Power (1) or Contact (2) ?");
+      }
+      switch (choice) {
+        case 1: //Power
+        case "1":
+          return 8;
+          break;
+        case 2: //Contact
+        case "2":
+          return 12;
+          break;
+        default:
+          console.log("Please enter 1 for Power or 2 for Contact.")
+          break;
+      }
+    }
+}
+
+function ballInPlay () {
+
 }
 
 function pitching (balls, strikes, player) {
@@ -97,17 +150,22 @@ function pitching (balls, strikes, player) {
   pitching(balls, strikes, player);
 }
 
-function choosePitch () {
-  let pitch;
-  while (pitch == undefined) {
-    switch (prompt("Choose a pitch: 1) Fastball 2) Changeup 3) Curveball")) {
-      case "1": //"Fastball"
+function choosePitch (choice = 0) {
+  while (true) {
+    if (choice !== 1 && choice !== 2 && choice !== 3) {
+      choice = prompt("Choose a pitch: 1) Fastball 2) Changeup 3) Curveball");
+    }
+    switch (choice) {
+      case 1: //"Fastball"
+      case "1":
         return 12;
         break;
-      case "2": //"Changeup"
+      case 2: //"Changeup"
+      case "2":
         return 10;
         break;
-      case "3": //"Curveball"
+      case 3: //"Curveball"
+      case "3":
         return 8;
         break;
       default:
@@ -116,21 +174,21 @@ function choosePitch () {
   }
 }
 
-function pitchResult (pitch) {
-  let result = rollDice(pitch);
-  if (result === 1) {
-    return "wild";
-  }
-  else if (1 < result < 4) {
-    return false;
-  }
-  else if (4 < result < pitch) {
-    return true;
-  }
-  else {
-    return "perfect";
-  }
-}
+// function pitchResult (pitch) {
+//   let result = rollDice(pitch);
+//   if (result === 1) {
+//     return "wild";
+//   }
+//   else if (1 < result < 4) {
+//     return false;
+//   }
+//   else if (4 < result < pitch) {
+//     return true;
+//   }
+//   else {
+//     return "perfect";
+//   }
+// }
 
 function addBaseRunner(numOfBases, score) {
   if (numOfBases === 4) {
