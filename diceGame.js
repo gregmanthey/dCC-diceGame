@@ -243,8 +243,22 @@ function wildPitch(score) {
   return score;
 }
 
-function runGameSummary () {
-
+function runGameSummary (userScore, computerScore) {
+  if (userScore === computerScore) {
+    console.log("Wow, it's a tie!");
+  }
+  else if (userScore > computerScore) {
+    console.log("Conglaturation! You defeated the computer!");
+  }
+  else {
+    console.log("Bummer. Better luck next time!");
+  }
+  console.log("Game summary:");
+  console.log("Final score:");
+  console.log("You: " + userScore + " runs");
+  // console.log("You: " + userHits + " hits");
+  console.log("Computer: " + computerScore + " runs");
+  // console.log("Computer: " + computerHits + " hits");
 }
 
 let fastball = {
