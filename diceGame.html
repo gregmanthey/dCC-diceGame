@@ -4,10 +4,41 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Baseball Dice Game</title>
+  <link rel="stylesheet" type="text/css" href="bootstrap.css">
 </head>
 <body>
-  <h1>Baseball Dice Game</h1>
-  <button onclick="runDiceGame()">Click to start!</button>
+  <h1 style="text-align: center">Baseball Dice Game</h1>
+  <div class="buttonHolder">
+    <button onclick="runDiceGame()">Click to start!</button>
+  </div>
+  <div class="rulesText">
+      <h2>Rules</h2>
+      <h3>Pitching</h3>
+      <p>If a 1 is rolled, the pitcher hits the batter, advancing them and any runners one base.
+      <br>If a 2 or 3 is rolled, the pitch misses the strike zone for a ball.
+      <br>If the highest possible number is rolled, the pitch is an automatic strike.
+      <br>With any other result, the pitch is in the strike zone, and it is the batter's turn to roll.
+      <h4>Fastball, Changeup, or Curveball?</h4>
+      <p>The Fastball die is 12 sided, giving a higher strike zone chance, and lower automatic strike and hit batter chances.
+      <br>The Changeup die is 10 sided, giving a medium strike zone chance, and slightly higher chances for an automatic strike and hit batter compared to the Fastball.
+      <br>The Curveball die is 8 sided, giving the lowest strike zone chance, and highest chance for automatic strike and hit batsmen.</p>
+      <h3>Batting</h3>
+      <p>If a 1 is rolled, the batter is out.
+      <br>If a 2 or 3 is rolled, the batter swings and misses.
+      <br>If the highest possible number is rolled, the batter hits a home run.
+      <br>Anything else results in hitting the ball.</p>
+      <h4>Power vs Contact</h4>
+      <p>The Power die is 7 sided, meaning a lower hit chance, but higher chance to hit a home run.
+      <br>The Contact die is 11 sided, giving a higher hit chance, but a lower chance to hit a home run.</p>
+      <h3>Ball in play</h3>
+      <p>When a ball is hit by the batter, a 20 sided die is rolled.</p>
+      <p>If a 5 or less is rolled, the batter is out.
+      <br>If a 6-10 is rolled, the ball is hit foul.
+      <br>If an 11-16 is rolled, the batter hits a single, advancing any runners one base.
+      <br>If a 17 or 18 is rolled, the batter hits a double, advancing any runners two bases.
+      <br>If a 19 is rolled, the batter hits a triple, advancing any runners three bases.
+      <br>If a 20 is rolled, the batter hits a home run, scoring any base runners in addition to the batter.</p>
+  </div>
   <script src="diceGame.js"></script>
 </body>
 </html>
