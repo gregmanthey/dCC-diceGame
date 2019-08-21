@@ -3,36 +3,58 @@
 function runDiceGame() {
   runSplashScreen();
   let home = isHome();
-  let playerScore = 0;
-  let computerScore = 0;
-  let balls = 0;
-  let strikes = 0;
-  let outs = 0;
+  let gameCounters = {
+    playerScore: 0,
+    computerScore: 0,
+    playerHits: 0,
+    computerHits: 0,
+    outs: 0,
+    balls: 0,
+    strikes: 0
+  }
   let pitchingResult;
   let battingResult;
   let player = true;
   let computer = false;
   
-  while (outs < 3) {
+  while (gameCounters.outs < 3) {
     if (home) {
-      pitchingResult = pitching(balls, strikes, computerScore, player);
-      if (pitchingResult === "strikeout") {
-        outs++;
-      }
-      else if (pitchingResult === "walk") {
-        addBaseRunner(1, computerScore);
-      }
-      else {
-        battingResult = batting(balls, strikes, !player);
+      pitchingResult = pitching(player);
+      gameCounters = updateCounters(pitchingResult, gameCounters, player);
+      if (pitchingResult === "in the zone"){
+        battingResult = batting(computer);
+        gameCounters = updateCounters(battingResult, gameCounters, computer);
       }
     }
     else {
-      pitching(balls, strikes, computer);
-      battingResult = batting(balls, strikes, player);
-      
+      pitchingResult = pitching(computer);
+      gameCounters = updateCounters(pitchingResult, gameCounters, computer);
+      if (pitchingResult === "in the zone"){
+        battingResult = batting(player);
+        gameCounters = updateCounters(battingResult, gameCounters, player);
+      }
     }
   }
-  runGameSummary(playerScore, computerScore);
+  gameCounters.outs = 0;
+  while (gameCounters.outs < 3) {
+    if (home) {
+      pitchingResult = pitching(computer);
+      gameCounters = updateCounters(pitchingResult, gameCounters, computer);
+      if (pitchingResult === "in the zone"){
+        battingResult = batting(player);
+        gameCounters = updateCounters(battingResult, gameCounters, player);
+      }
+    }
+    else {
+      pitchingResult = pitching(player);
+      gameCounters = updateCounters(pitchingResult, gameCounters, player);
+      if (pitchingResult === "in the zone"){
+        battingResult = batting(computer);
+        gameCounters = updateCounters(battingResult, gameCounters, computer);
+      }
+    }
+  }
+  runGameSummary(gameCounters);
 }
 
 function rollDice(numOfSides) {
@@ -60,7 +82,7 @@ function isHome() {
   }
 }
 
-function batting (balls, strikes, player) {
+function batting (player) {
   let swing;
   if (player === true) {
     swing = chooseSwing();
@@ -83,7 +105,6 @@ function batting (balls, strikes, player) {
     return "strike";
   }
   else {
-    //figure out in play results and what to do. Maybe roll a d20.
     let result = ballInPlay();
     return result;
   }
@@ -111,13 +132,9 @@ function chooseSwing (choice = 0) {
 function ballInPlay () {
   let resultingRoll = rollDice(20);
   console.log("Rolling 20 sided die for a ball in play... result is " + resultingRoll);
-  if (resultingRoll < 6) {
-    console.log("Batter is out. No runners advance.");
+  if (resultingRoll < 11) {
+    console.log("Batter is out.");
     return "out";
-  }
-  else if (resultingRoll < 11) {
-    console.log("Batter is out, runners advance.");
-    return "advance";
   }
   else if (resultingRoll < 17) {
     console.log("Base hit!");
@@ -137,7 +154,7 @@ function ballInPlay () {
   }
 }
 
-function pitching (balls, strikes, score, player) {
+function pitching (player) {
   let pitch;
   if (player) {
     pitch = choosePitch();
@@ -147,32 +164,22 @@ function pitching (balls, strikes, score, player) {
   }
   let accuracy = rollDice(pitch);  //roll different die based on pitch selection
   console.log("Rolling " + pitch + " sided die for pitcher... result is " + accuracy);
-  if (accuracy === pitch && strikes === 2) {
-    console.log("Strike three! Batter's out!");
-    return "strikeout";
-  }
-  else if (accuracy < 4 && balls === 3) {
-    console.log("That's ball four. Take your base!");
-    return "walk";
-  }
-  else if (accuracy === 1) {
-    balls++;
-    console.log("Wild pitch! Runners advance.");
-    score = wildPitch(score);
+
+  if (accuracy === 1) {
+    return "wild pitch";
   }
   else if (accuracy === pitch) {
-    strikes++;
     console.log("Perfect pitch! Automatic strike.");
+    return "strike";
   }
   else if (accuracy < 4) {
-    balls++;
-    console.log("That missed the strike zone. Ball " + balls + ".");
+    console.log("That missed the strike zone for a ball.");
+    return "ball";
   }
   else {
     console.log("Pitch is in the zone...");
-    return accuracy;
+    return "in the zone";
   }
-  pitching(balls, strikes, player);
 }
 
 function choosePitch (choice = 0) {
@@ -254,7 +261,93 @@ function addBaseRunner(numOfBases, score) {
   }
 }
 
+function updateCounters (result, gameCounters, player) {
+  switch (result) {
+    case "home run":
+      if (player) {
+        gameCounters.playerHits++;
+        gameCounters.playerScore = addBaseRunner(4, gameCounters.playerScore);
+      }
+      else {
+        gameCounters.computerHits++;
+        gameCounters.computerScore = addBaseRunner(4, gameCounters.computerScore);
+      }
+      break;
+    case "triple":
+      if (player) {
+        gameCounters.playerHits++;
+        gameCounters.playerScore = addBaseRunner(3, gameCounters.playerScore);
+      }
+      else {
+        gameCounters.computerHits++;
+        gameCounters.computerScore = addBaseRunner(3, gameCounters.computerScore);
+      }
+      break;
+    case "double":
+      if (player) {
+        gameCounters.playerHits++;
+        gameCounters.playerScore = addBaseRunner(2, gameCounters.playerScore);
+      }
+      else {
+        gameCounters.computerHits++;
+        gameCounters.computerScore = addBaseRunner(2, gameCounters.computerScore);
+      }
+      break;
+    case "single":
+      if (player) {
+        gameCounters.playerHits++;
+        gameCounters.playerScore = addBaseRunner(1, gameCounters.playerScore);
+      }
+      else {
+        gameCounters.computerHits++;
+        gameCounters.computerScore = addBaseRunner(1, gameCounters.computerScore);
+      }
+      break;
+    case "strikeout":
+    case "out":
+      gameCounters.outs++;
+      gameCounters.strikes = 0;
+      gameCounters.balls = 0;
+      console.log("There are " + gameCounters.outs + " outs.")
+      break;
+    case "walk":
+      if (player) {
+        addBaseRunner(1, gameCounters.computerScore);
+      }
+      else {
+        addBaseRunner(1, gameCounters.playerScore);
+      }
+      gameCounters.balls = 0;
+      gameCounters.strikes = 0;
+      break;
+    case "wild pitch":
+      if (player) {
+        gameCounters.computerScore = wildPitch(gameCounters.computerScore);
+      }
+      else {
+        gameCounters.playerScore = wildPitch(gameCounters.playerScore);
+      }
+      break;
+    case "ball":
+      gameCounters.balls++;
+      if (gameCounters.balls === 4) {
+        gameCounters = updateCounters("walk", gameCounters, player);
+      }
+      break;
+    case "strike":
+      gameCounters.strikes++;
+      if (gameCounters.strikes === 3) {
+        gameCounters = updateCounters("strikeout", gameCounters, player);
+      }
+      break;
+    default:
+      break;
+  }
+  return gameCounters;
+}
+
 function wildPitch(score) {
+  console.log("Wild pitch! Runners advance.");
   for (let i = 2; i >= 0; i--) {
     if (baseRunners.bases[i] === true && i == 2) {
       score++;
@@ -269,11 +362,11 @@ function wildPitch(score) {
   return score;
 }
 
-function runGameSummary (userScore, computerScore) {
-  if (userScore === computerScore) {
+function runGameSummary (gameCounters) {
+  if (gameCounters.playerScore === gameCounters.computerScore) {
     console.log("Wow, it's a tie!");
   }
-  else if (userScore > computerScore) {
+  else if (gameCounters.playerScore > gameCounters.computerScore) {
     console.log("Conglaturation! A winner is you");
   }
   else {
@@ -281,10 +374,10 @@ function runGameSummary (userScore, computerScore) {
   }
   console.log("Game summary:");
   console.log("Final score:");
-  console.log("You: " + userScore + " runs");
-  // console.log("You: " + userHits + " hits");
-  console.log("Computer: " + computerScore + " runs");
-  // console.log("Computer: " + computerHits + " hits");
+  console.log("You: " + gameCounters.playerScore + " runs");
+  console.log("You: " + gameCounters.playerHits + " hits");
+  console.log("Computer: " + gameCounters.computerScore + " runs");
+  console.log("Computer: " + gameCounters.computerHits + " hits");
 }
 
 let fastball = {
