@@ -28,6 +28,7 @@ function runDiceGame() {
         battingResult = batting(computer);
         gameCounters = updateCounters(battingResult, gameCounters, computer);
       }
+      console.log("---------------------------------------------------------");
     }
     else {
       pitchingResult = pitching(computer);
@@ -36,6 +37,7 @@ function runDiceGame() {
         battingResult = batting(player);
         gameCounters = updateCounters(battingResult, gameCounters, player);
       }
+      console.log("---------------------------------------------------------");
     }
   }
   gameCounters.outs = 0;
@@ -49,6 +51,7 @@ function runDiceGame() {
         battingResult = batting(player);
         gameCounters = updateCounters(battingResult, gameCounters, player);
       }
+      console.log("---------------------------------------------------------");
     }
     else {
       pitchingResult = pitching(player);
@@ -57,6 +60,7 @@ function runDiceGame() {
         battingResult = batting(computer);
         gameCounters = updateCounters(battingResult, gameCounters, computer);
       }
+      console.log("---------------------------------------------------------");
     }
   }
   runGameSummary(gameCounters);
