@@ -39,6 +39,8 @@ function runDiceGame() {
     }
   }
   gameCounters.outs = 0;
+  gameCounters = resetBallsAndStrikes(gameCounters);
+  gameCounters = resetBaseRunners(gameCounters);
   while (gameCounters.outs < 3) {
     if (home) {
       pitchingResult = pitching(computer);
@@ -263,6 +265,12 @@ function addBaseRunner(numOfBases, score, gameCounters) {
 function resetBallsAndStrikes (gameCounters) {
   gameCounters.balls = 0;
   gameCounters.strikes = 0;
+  return gameCounters;
+}
+
+function resetBaseRunners (gameCounters) {
+  gameCounters.currentBaserunners = 0;
+  gameCounters.bases = [false, false, false];
   return gameCounters;
 }
 
